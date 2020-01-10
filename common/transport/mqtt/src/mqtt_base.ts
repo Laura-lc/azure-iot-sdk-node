@@ -9,6 +9,8 @@ import { Client as MqttClient, IClientOptions, IClientPublishOptions, IClientSub
 import * as dbg from 'debug';
 const debug = dbg('azure-iot-mqtt-base:MqttBase');
 import { errors, results, SharedAccessSignature, X509 } from 'azure-iot-common';
+import constants = require('constants');
+import tls = require('tls');
 
 /*Codes_SRS_NODE_COMMON_MQTT_BASE_16_004: [The `MqttBase` constructor shall instanciate the default MQTT.JS library if no argument is passed to it.]*/
 /*Codes_SRS_NODE_COMMON_MQTT_BASE_16_005: [The `MqttBase` constructor shall use the object passed as argument instead of the default MQTT.JS library if it's not falsy.]*/
@@ -220,7 +222,10 @@ export class MqttBase extends EventEmitter {
       /*Codes_SRS_NODE_COMMON_MQTT_BASE_16_016: [The `connect` method shall configure the `keepalive` ping interval to 3 minutes by default since the Azure Load Balancer TCP Idle timeout default is 4 minutes.]*/
       keepalive: 180,
       reschedulePings: false
-    };
+    }
+
+    // tslint:disable-next-line: no-string-literal
+    options['secureContext'] = tls.createSecureContext({ secureOptions: constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1 });
 
     /*Codes_SRS_NODE_COMMON_MQTT_BASE_18_001: [The `connect` method shall set the `ca` option based on the `ca` string passed in the `options` structure via the `setOptions` function.]*/
     if (this._options) {
