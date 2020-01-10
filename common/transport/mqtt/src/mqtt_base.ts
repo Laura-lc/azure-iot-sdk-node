@@ -222,7 +222,7 @@ export class MqttBase extends EventEmitter {
       /*Codes_SRS_NODE_COMMON_MQTT_BASE_16_016: [The `connect` method shall configure the `keepalive` ping interval to 3 minutes by default since the Azure Load Balancer TCP Idle timeout default is 4 minutes.]*/
       keepalive: 180,
       reschedulePings: false
-    }
+    };
 
     // tslint:disable-next-line: no-string-literal
     options['secureContext'] = tls.createSecureContext({ secureOptions: constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1 });

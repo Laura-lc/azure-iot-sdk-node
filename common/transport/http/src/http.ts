@@ -6,6 +6,8 @@
 import { request as http_request, ClientRequest, IncomingMessage } from 'http';
 import { request as https_request, RequestOptions } from 'https';
 import { Message, X509 } from 'azure-iot-common';
+import constants = require('constants');
+import tls = require('tls');
 import dbg = require('debug');
 const debug = dbg('azure-iot-http-base.Http');
 
@@ -148,6 +150,9 @@ export class Http {
     if (this._options && this._options.ca) {
       httpOptions.ca = this._options.ca;
     }
+
+    // tslint:disable-next-line: no-string-literal
+    httpOptions['secureContext'] = tls.createSecureContext({ secureOptions: constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1 });
 
     let httpReq = request(httpOptions, (response: IncomingMessage): void => {
       let responseBody = '';
