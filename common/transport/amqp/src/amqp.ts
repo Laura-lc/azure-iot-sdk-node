@@ -695,12 +695,16 @@ export class Amqp {
    */
   connect(config: AmqpBaseTransportConfig, done: GenericAmqpBaseCallback<any>): void {
 
+    let secureContext = {}; // YMTODO: Make this a ISecureContext, rather than a generic object. Then fix all the <any> types
     let parsedUrl = urlParser.parse(config.uri);
     let connectionParameters: any = {};
     if (config.sslOptions) {
-      connectionParameters.cert = config.sslOptions.cert;
-      connectionParameters.key = config.sslOptions.key;
-      connectionParameters.ca = config.sslOptions.ca;
+      (<any>secureContext).cert = config.sslOptions.cert;
+      (<any>secureContext).key = config.sslOptions.key;
+      (<any>secureContext).ca = config.sslOptions.ca;
+      // connectionParameters.cert = config.sslOptions.cert;
+      // connectionParameters.key = config.sslOptions.key;
+      // connectionParameters.ca = config.sslOptions.ca;
     }
     connectionParameters.port = parsedUrl.port ? ( parsedUrl.port ) : (5671);
     connectionParameters.transport = 'tls';
@@ -717,8 +721,9 @@ export class Amqp {
       connectionParameters.sasl_mechanisms[config.saslMechanismName] = config.saslMechanism;
     }
     connectionParameters = merge(connectionParameters, config.policyOverride);
-    // tslint:disable-next-line: no-string-literal
-    connectionParameters['secureContext'] = tls.createSecureContext({ secureOptions: constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1 });
+
+    (<any>secureContext).secureOptions = constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1;
+    (<any>connectionParameters).secureContext = tls.createSecureContext(secureContext);
 
     this._config = config;
     this._fsm.handle('connect', connectionParameters, done);

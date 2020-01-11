@@ -83,6 +83,7 @@ export class Http {
     // options out as its own parameter and then appropriately modify the
     // overload detection logic below.
 
+
     if (!done && (typeof options === 'function')) {
       done = options;
       options = undefined;
@@ -93,6 +94,8 @@ export class Http {
       requestOptions = options as HttpRequestOptions;
       options = undefined;
     }
+
+    let secureContext = {}; // YMTODO: Make this a ISecureContext, rather than a generic object. Then fix all the <any> types
 
     let x509Options: X509 = null;
     if (options && this.isX509Options(options)) {
@@ -141,18 +144,24 @@ export class Http {
 
     /*Codes_SRS_NODE_HTTP_16_001: [If `options` has x509 properties, the certificate, key and passphrase in the structure shall be used to authenticate the connection.]*/
     if (x509Options) {
-      httpOptions.cert = (x509Options as X509).cert;
-      httpOptions.key = (x509Options as X509).key;
-      httpOptions.passphrase = (x509Options as X509).passphrase;
-      httpOptions.clientCertEngine = (x509Options as X509).clientCertEngine;
+      (<any>secureContext).cert = (x509Options as X509).cert;
+      (<any>secureContext).key = (x509Options as X509).key;
+      (<any>secureContext).passphrase = (x509Options as X509).passphrase;
+      (<any>secureContext).clientCertEngine = (x509Options as X509).clientCertEngine;
+      // YMTODO: When this has been validated as working, remove these.
+      // httpOptions.cert = (x509Options as X509).cert;
+      // httpOptions.key = (x509Options as X509).key;
+      // httpOptions.passphrase = (x509Options as X509).passphrase;
+      // httpOptions.clientCertEngine = (x509Options as X509).clientCertEngine;
     }
 
     if (this._options && this._options.ca) {
-      httpOptions.ca = this._options.ca;
+      (<any>secureContext).ca = this._options.ca;
+      // httpOptions.ca = this._options.ca;
     }
 
-    // tslint:disable-next-line: no-string-literal
-    httpOptions['secureContext'] = tls.createSecureContext({ secureOptions: constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1 });
+    (<any>secureContext).secureOptions = constants.SSL_OP_NO_SSLv2 | constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1;
+    (<any>httpOptions).secureContext = tls.createSecureContext(secureContext);
 
     let httpReq = request(httpOptions, (response: IncomingMessage): void => {
       let responseBody = '';
