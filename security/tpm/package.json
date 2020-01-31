@@ -7,7 +7,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "dependencies": {
-    "azure-iot-common": "1.11.2",
+    "azure-iot-common": "10.11.2",
     "base32-encode": "^1.0.0",
     "debug": "^4.1.1",
     "machina": "^4.0.2",

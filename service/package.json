@@ -9,7 +9,7 @@
   "dependencies": {
     "async": "^2.6.2",
     "azure-iot-amqp-base": "2.3.2",
-    "azure-iot-common": "1.11.2",
+    "azure-iot-common": "10.11.2",
     "azure-iot-http-base": "1.10.2",
     "debug": "^4.1.1",
     "lodash": "^4.17.15",
